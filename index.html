@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bar Wallet – Account Settings</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0f0f;
+            color: #eaeaea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #101616;
+            border-radius: 16px;
+            padding: 2rem 2.5rem;
+            width: 360px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: #9aa0a0;
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            background-color: #1a2020;
+            color: #eaeaea;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: #aaa;
+            user-select: none;
+        }
+
+        button {
+            width: 100%;
+            background-color: #00bfa6;
+            color: white;
+            font-weight: 600;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+            button:hover {
+                background-color: #00d1b4;
+            }
+
+        .option-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .secondary {
+            background-color: #1f2b2b;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #logBox {
+            background-color: #0e1414;
+            border: 1px solid #1f2b2b;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 0.8rem;
+            margin-top: 12px;
+            text-align: left;
+            max-height: 120px;
+            overflow-y: auto;
+            color: #ccc;
+        }
+
+            #logBox strong {
+                color: #00bfa6;
+            }
+
+        #userInfo {
+            background-color: #1a2020;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #cfcfcf;
+            text-align: left;
+        }
+
+        #signOutBtn {
+            position: absolute;
+            top: 105%; /* places it just below the panel */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30%; /* slightly wider since it’s centered */
+            min-width: 80px;
+            background-color: #ff4b4b;
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-align: center;
+        }
+
+
+
+        .updateLog {
+            background-color: #0e1414;
+            border: 1px solid #1f2b2b;
+            border-radius: 8px;
+            padding: 6px;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            color: #ccc;
+            max-height: 60px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .section-box {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="signOutBtn" class="hidden">Sign Out</button>
+
+        <h1>Bar Wallet</h1>
+        <p>Sign in to manage your account</p>
+
+        <div id="signinBox">
+            <input type="email" id="email" placeholder="you@example.com" />
+            <div class="password-container">
+                <input type="password" id="password" placeholder="Password" />
+                <span id="togglePassword" class="toggle-password">👁️</span>
+            </div>
+            <button id="signinBtn">Sign in</button>
+            <div id="logBox"></div>
+        </div>
+
+        <div id="accountOptions" class="hidden">
+            <div id="userInfo"></div>
+            <div class="option-buttons">
+                <button class="secondary" id="changeProfileBtn">Edit Profile</button>
+                <button class="secondary" id="changePasswordBtn">Change Password</button>
+            </div>
+
+            <!-- Profile Box -->
+            <div id="profileChangeBox" class="hidden section-box">
+                <input type="text" id="newFullName" placeholder="Full Name" />
+                <input type="text" id="newDOB" placeholder="Date of Birth (DD/MM/YYYY)" />
+                <input type="text" id="newPhone" placeholder="Phone Number" />
+                <button id="confirmProfileChange">Update Profile</button>
+                <div id="profileUpdateLog" class="updateLog"></div>
+            </div>
+
+            <!-- Password Box -->
+            <div id="passwordChangeBox" class="hidden section-box">
+                <div class="password-container">
+                    <input type="password" id="newPassword" placeholder="New password" />
+                    <span id="toggleNewPassword" class="toggle-password">👁️</span>
+                </div>
+                <div class="password-container">
+                    <input type="password" id="confirmNewPassword" placeholder="Confirm new password" />
+                    <span id="toggleConfirmNewPassword" class="toggle-password">👁️</span>
+                </div>
+                <button id="confirmPasswordChange">Update Password</button>
+                <div id="passwordUpdateLog" class="updateLog"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDQ5oYWyRiWbXM5IMqd3Y9U0ycPGtNkrEM",
+    authDomain: "bar-wallet.firebaseapp.com",
+    projectId: "bar-wallet"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const logBox = document.getElementById("logBox");
+const passwordUpdateLog = document.getElementById("passwordUpdateLog");
+const profileUpdateLog = document.getElementById("profileUpdateLog");
+const signOutBtn = document.getElementById("signOutBtn");
+
+const log = (msg,type="info")=>{
+    const color = type==="error"? "#ff4b4b" : type==="success"? "#00d084":"#00bfa6";
+    logBox.innerHTML += `<div><strong style="color:${color}">[${type.toUpperCase()}]</strong> ${msg}</div>`;
+    logBox.scrollTop = logBox.scrollHeight;
+};
+
+const logUpdate = (box,msg,type="info")=>{
+    const color = type==="error"? "#ff4b4b" : type==="success"? "#00d084":"#00bfa6";
+    box.innerHTML = `<div><strong style="color:${color}">[${type.toUpperCase()}]</strong> ${msg}</div>`;
+    box.scrollTop = box.scrollHeight;
+    setTimeout(()=>{box.innerHTML="";},5000);
+};
+
+// Toggle password visibility
+const toggleVisibility = (inputId,toggleId)=>{
+    const input=document.getElementById(inputId);
+    const toggle=document.getElementById(toggleId);
+    toggle.addEventListener("click",()=>{
+        const isHidden=input.type==="password";
+        input.type=isHidden?"text":"password";
+        toggle.textContent=isHidden?"🙈":"👁️";
+    });
+};
+toggleVisibility("password","togglePassword");
+toggleVisibility("newPassword","toggleNewPassword");
+toggleVisibility("confirmNewPassword","toggleConfirmNewPassword");
+
+// Sign in
+document.getElementById("signinBtn").addEventListener("click",async()=>{
+    const email=document.getElementById("email").value.trim();
+    const password=document.getElementById("password").value.trim();
+    if(!email||!password) return log("Please enter both email and password.","error");
+
+    try{
+        log("Attempting sign-in...");
+        const cred=await signInWithEmailAndPassword(auth,email,password);
+        const user=cred.user;
+        log(`Signed in as ${user.email}`,"success");
+
+        const snapshot=await getDoc(doc(db,"users",user.uid));
+
+        document.getElementById("signinBox").classList.add("hidden");
+        document.getElementById("accountOptions").classList.remove("hidden");
+        signOutBtn.classList.remove("hidden");
+
+        const userInfo=document.getElementById("userInfo");
+        if(snapshot.exists()){
+            const data=snapshot.data();
+            userInfo.innerHTML=`
+                <strong>User Info:</strong><br>
+                Full Name: ${data.fullName || "Not provided"}<br>
+                DOB: ${data.dob || "Not provided"}<br>
+                Phone: ${data.phone || "Not provided"}<br>
+                Email: ${data.email || user.email}
+            `;
+        } else{
+            userInfo.textContent="No user profile found in Firestore.";
+        }
+    }catch(error){
+        log("Sign-in failed: "+error.message,"error");
+    }
+});
+
+// Show/hide boxes with proper order
+const profileBox=document.getElementById("profileChangeBox");
+const passwordBox=document.getElementById("passwordChangeBox");
+
+document.getElementById("changeProfileBtn").addEventListener("click",()=>{
+    profileBox.classList.toggle("hidden");
+    passwordBox.classList.add("hidden");
+});
+
+document.getElementById("changePasswordBtn").addEventListener("click",()=>{
+    passwordBox.classList.toggle("hidden");
+    profileBox.classList.add("hidden");
+});
+
+// Update Profile
+document.getElementById("confirmProfileChange").addEventListener("click",async()=>{
+    const user=auth.currentUser;
+    if(!user) return logUpdate(profileUpdateLog,"You must sign in first!","error");
+
+    const fullName=document.getElementById("newFullName").value.trim();
+    const dob=document.getElementById("newDOB").value.trim();
+    const phone=document.getElementById("newPhone").value.trim();
+
+    if(!fullName&&!dob&&!phone) return logUpdate(profileUpdateLog,"Enter at least one field to update.","error");
+
+    try{
+        const updates={};
+        if(fullName) updates.fullName=fullName;
+        if(dob) updates.dob=dob;
+        if(phone) updates.phone=phone;
+
+        await updateDoc(doc(db,"users",user.uid),updates);
+        logUpdate(profileUpdateLog,"Profile updated successfully!","success");
+
+        const snapshot=await getDoc(doc(db,"users",user.uid));
+        const data=snapshot.data();
+        document.getElementById("userInfo").innerHTML=`
+            <strong>User Info:</strong><br>
+            Full Name: ${data.fullName || "Not provided"}<br>
+            DOB: ${data.dob || "Not provided"}<br>
+            Phone: ${data.phone || "Not provided"}<br>
+            Email: ${data.email || user.email}
+        `;
+    }catch(error){
+        logUpdate(profileUpdateLog,"Profile update failed: "+error.message,"error");
+    }
+});
+
+// Update Password
+document.getElementById("confirmPasswordChange").addEventListener("click",async()=>{
+    const user=auth.currentUser;
+    const newPass=document.getElementById("newPassword").value.trim();
+    const confirmPass=document.getElementById("confirmNewPassword").value.trim();
+
+    if(!user) return logUpdate(passwordUpdateLog,"You must sign in first!","error");
+    if(!newPass||!confirmPass) return logUpdate(passwordUpdateLog,"Please fill both password fields.","error");
+    if(newPass!==confirmPass) return logUpdate(passwordUpdateLog,"Passwords do not match!","error");
+
+    try{
+        await updatePassword(user,newPass);
+        logUpdate(passwordUpdateLog,"Password updated successfully!","success");
+    }catch(error){
+        logUpdate(passwordUpdateLog,"Password update failed: "+error.message,"error");
+    }
+});
+
+// Sign Out
+signOutBtn.addEventListener("click",async()=>{
+    try{
+        await signOut(auth);
+        log("Signed out successfully.","success");
+        document.getElementById("accountOptions").classList.add("hidden");
+        document.getElementById("signinBox").classList.remove("hidden");
+        signOutBtn.classList.add("hidden");
+        logBox.innerHTML="";
+    }catch(error){
+        log("Sign out failed: "+error.message,"error");
+    }
+});
+    </script>
+</body>
+</html>
