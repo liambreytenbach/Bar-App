@@ -274,7 +274,18 @@
             if (password !== confirm) return merchantSignupLog.innerHTML = "Passwords do not match!";
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
-                await setDoc(doc(collection(db, "Restaurants")), { merchantEmail: email, name, location: "", phone: "", hours: "", description: "", imageUrl: "", revenue: 0, tip: 0, bartenders: [] });
+                await setDoc(doc(collection(db, "Restaurants")), {
+                    merchantEmail: email,
+                    name,
+                    location: document.getElementById("merchantLocation").value.trim(),
+                    phone: document.getElementById("merchantPhone").value.trim(),
+                    hours: document.getElementById("merchantHours").value.trim(),
+                    description: document.getElementById("merchantDescription").value.trim(),
+                    imageUrl: document.getElementById("merchantImageUrl").value.trim(),
+                    revenue: 0,
+                    tip: 0,
+                    bartenders: []
+                });
                 document.getElementById("merchantSignupBox").classList.add("hidden");
                 document.getElementById("merchantDashboard").classList.remove("hidden");
                 loadRestaurant(email);
